@@ -1,5 +1,6 @@
 import Product from '../models/product.model.js'
 import {uploadImage} from '../utils/cloudinary.js'
+import counter from '../models/sequencing.js'
 
 
 
@@ -14,27 +15,47 @@ export const getProducts = async (req,res) =>{
 } 
 
 export const createProducts = async (req,res) => {
-  try {
-     const{name, description, price} = (req.body)
   
-    console.log(name, description, price)
-  const product = new Product({
-    name,
-    description,
-    price
-  })
+  try {
+     const{codigo_barras, nombre, descripcion, precio_venta, existencia, imageUrl} = (req.body)  
+    counter.findOneAndUpdate(
+      {id:"autoval"},
+      {"$inc": {"seq":1}},
+      {new:true},(err,cd)=>{
+        let seqId;
+        if(cd==null){
+          const newval = new counter({id:"autoval", seq:1})
+          newval.save()
+          seqId=1
+        }else{
+          seqId=cd.seq
+        }
 
-  if(req.files?.image){
-    const result = await uploadImage(req.files.image.tempFilePath)
+        console.log(seqId, codigo_barras, nombre, descripcion, precio_venta, existencia)
+    
+  const product = new Product({
+    _id:seqId,
+    codigo_barras, 
+    nombre, 
+    descripcion, 
+    precio_venta, 
+    existencia,
+    imageUrl
+  })
+if(req.files?.image){
+    const result =  uploadImage(req.files.image.tempFilePath)
     product.image = {
       public_id: result.public_id,
       secure_url: result.secure_url
     }
   }
-    
-  await product.save()
+  
+  product.save()
   
   res.json(product)
+      }
+    )
+    
   } catch (error) {
     return res.status(500).json({message: error.message})
   }
@@ -54,7 +75,7 @@ export const updateProducts = async (req,res) => {
 
 export const deleteProducts = async (req,res) => {
  try {
-  const product = await     Product.findByIdAndDelete(req.params.id)
+  const product = await Product.findByIdAndDelete(req.params.id)
   console.log(req.params.id)
   if (!product) return res.status(404).json({
     message: 'Product does not exist'

@@ -11,11 +11,11 @@ router.get('/factura', getFacturas)
 
 router.post('/factura', createFactura)
 
-router.put('/factura/:numFactura', updateFactura)
+router.put('/factura/:id', updateFactura)
 
-router.delete('/factura/:numFactura', deleteFactura)
+router.delete('/factura/:id', deleteFactura)
 
-router.get('/factura/:cedula', getFactura)
+router.get('/factura/:cedulaCliente', getFactura)
 
 
 

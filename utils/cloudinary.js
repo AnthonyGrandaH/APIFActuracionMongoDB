@@ -10,9 +10,15 @@ cloudinary.config({
   secure: true
 });
 
+export async function uploadFactura(filePath) {
+ return await cloudinary.uploader.upload(filePath, {
+   folder: 'facturas',
+   pages: true
+ })
+};
+
 export async function uploadImage(filePath) {
  return await cloudinary.uploader.upload(filePath, {
-   folder: 'replit'
+   folder: 'Productos'
  })
-}
-
+};

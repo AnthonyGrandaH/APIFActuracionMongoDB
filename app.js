@@ -23,6 +23,7 @@ app.use(fileUpload({
 
 app.use(indexRoutes)
 app.use(facturaRoutes)
+app.use(productsRoutes)
 
 
 

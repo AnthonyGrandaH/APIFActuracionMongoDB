@@ -1,5 +1,5 @@
 import Factura from '../models/factura.model.js'
-
+import {uploadFactura} from '../utils/cloudinary.js'
 
 
 export const getFacturas = async (req, res) => {
@@ -15,24 +15,27 @@ export const getFacturas = async (req, res) => {
 export const createFactura = async (req, res) => {
     try {
         const { numFactura, cedulaCliente, fechaFactura, valorTotal, dirFactura } = (req.body)
+      console.log(req.files)
 
         console.log(numFactura, cedulaCliente, fechaFactura, valorTotal, dirFactura)
+      const facturaDireccion = req.files.factura.tempFilePath + ".pdf"
+      console.log(facturaDireccion)
         const factura = new Factura({
             numFactura,
             cedulaCliente,
             fechaFactura,
-            valorTotal,
-            dirFactura
+            valorTotal
+            //dirFactura
         })
+      factura['dirFactura'] = facturaDireccion
 
-        if (req.files?.factura) {
-            const result = await uploadFactura(req.files.factura.tempFilePath)
-            factura.factura = {
-                public_id: result.public_id,
-                secure_url: result.secure_url
-            }
+      if(req.files?.factura){
+        const result = await uploadFactura(req.files.factura.tempFilePath)
+        factura.factura = {
+          public_id: result.public_id,
+          secure_url: result.secure_url
         }
-
+      }
         await factura.save()
 
         res.json(factura)
@@ -44,8 +47,8 @@ export const createFactura = async (req, res) => {
 
 export const updateFactura = async (req, res) => {
     try {
-        const { numFactura } = req.params;
-        const facturaUpdated = await Factura.findByIdAndUpdate(numFactura, req.body, { new: true })
+        const { id } = req.params;
+        const facturaUpdated = await Factura.findByIdAndUpdate(id, req.body, { new: true })
         return res.json(facturaUpdated)
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -54,10 +57,10 @@ export const updateFactura = async (req, res) => {
 }
 
 
-export const deleteFactura = async (req, res) => {
+/*export const deleteFactura = async (req, res) => {
     try {
-        const factura = await Factura.findByIdAndDelete(req.params.numFactura)
-        console.log(req.params.numFactura)
+        const factura = await Factura.findByIdAndDelete(req.params.id)
+        console.log(req.params.id)
         if (!factura) return res.status(404).json({
             message: 'Factura no existe'
         })
@@ -66,11 +69,28 @@ export const deleteFactura = async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 
-}
+}*/
+
+
+export const deleteFactura = async (req,res) => {
+ try {
+  const factura = await     Factura.findByIdAndDelete(req.params.id)
+  console.log(req.params.id)
+  if (!factura) return res.status(404).json({
+    message: 'Factura does not exist'
+  })
+  return res.send(factura)  
+  } catch (error) {
+    return res.status(500).json({message: error.message})
+  }
+  
+} 
+
+
 
 export const getFactura = async (req, res) => {
     try {
-        const factura = await Factura.findById(req.params.cedulaCliente)
+        const factura = await Factura.findBycedulaCliente(req.params.cedulaCliente)
         if (!factura) return res.status(404).json({
             message: 'Factura no existe'
         })
