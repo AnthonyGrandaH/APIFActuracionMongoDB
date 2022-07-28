@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 import AutoIncrement from 'mongoose-sequence'
-//import sequencing from "../models/sequencing.js"
-//const sequencing = require("../models/sequencing.js");
 
 const productSchema= mongoose.Schema({
   _id: {
@@ -45,12 +43,6 @@ const productSchema= mongoose.Schema({
 },{
   timestamps: true
 }, { _id: false })
-//productSchema.plugin(AutoIncrement,{start_seq:2});
-/*productSchema.plugin(AutoIncrement.plugin, {
-    model: 'Product',
-    field: '_id',
-    startAt: 1,
-    incrementBy: 1
-});*/
+
 export default mongoose.model('Product', productSchema)
 

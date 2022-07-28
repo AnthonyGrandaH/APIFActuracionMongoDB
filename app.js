@@ -7,8 +7,6 @@ import indexRoutes from './routes/index.routes.js'
 import productsRoutes from "./routes/products.routes.js"
 import facturaRoutes from './routes/factura.routes.js'
 
-
-
 const app = express()
 
 app.use(cors())
@@ -24,9 +22,5 @@ app.use(fileUpload({
 app.use(indexRoutes)
 app.use(facturaRoutes)
 app.use(productsRoutes)
-
-
-
-
 
 export default app 
